@@ -1,5 +1,3 @@
-package src;
-
 import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -164,7 +162,7 @@ public class ScreenShare {
             Robot r = new Robot();
             Rectangle screenBounds = currentDevice.getDefaultConfiguration().getBounds();
 
-            System.out.println("Server Started On port "+port +" Screen "+selectedScreen);
+            System.out.println("Server Started On port "+port +" Screen "+(selectedScreen+1));
 
             while (true) {
                 try {
