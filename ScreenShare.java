@@ -11,6 +11,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedInputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -126,7 +128,11 @@ public class ScreenShare {
                 }
 
                 socket = new Socket(serverAddr, port);
-                ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
+                
+                socket.setSendBufferSize(250);
+                socket.setReceiveBufferSize(250);
+
+                ObjectInputStream inputStream = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
                 image = ImageIO.read(inputStream);
                 panel.setImg(image);
                 panel.repaint();
@@ -158,6 +164,7 @@ public class ScreenShare {
     
         try {
             server = new ServerSocket(port);
+
             GraphicsDevice currentDevice = screens[selectedScreen];
             Robot r = new Robot();
             Rectangle screenBounds = currentDevice.getDefaultConfiguration().getBounds();
@@ -168,9 +175,10 @@ public class ScreenShare {
                 try {
                     socket = server.accept();
                     InetAddress addr = socket.getInetAddress();
-                    System.out.println(
-                            "Received Connection From " + addr.getCanonicalHostName() + " at " + addr.getHostAddress());
-                    ObjectOutputStream outstream = new ObjectOutputStream(socket.getOutputStream());
+                    long millis = System.currentTimeMillis() % 1000;
+                    System.out.println(millis+
+                            " Received Connection From " + addr.getCanonicalHostName() + " at " + addr.getHostAddress());
+                    ObjectOutputStream outstream = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
                     BufferedImage img;
                     img = r.createScreenCapture(screenBounds);
                     Point mouse = MouseInfo.getPointerInfo().getLocation();
@@ -184,7 +192,10 @@ public class ScreenShare {
                     }
 
                     ImageIO.write(img, "jpg", outstream);
+
+                    
                     socket.close();
+                    outstream.flush();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
