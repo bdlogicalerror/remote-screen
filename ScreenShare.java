@@ -21,6 +21,8 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
+import java.awt.Cursor;
+
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
@@ -132,7 +134,7 @@ public class ScreenShare {
                 socket.setSendBufferSize(250);
                 socket.setReceiveBufferSize(250);
 
-                ObjectInputStream inputStream = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
+                ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
                 image = ImageIO.read(inputStream);
                 panel.setImg(image);
                 panel.repaint();
@@ -178,7 +180,7 @@ public class ScreenShare {
                     long millis = System.currentTimeMillis() % 1000;
                     System.out.println(millis+
                             " Received Connection From " + addr.getCanonicalHostName() + " at " + addr.getHostAddress());
-                    ObjectOutputStream outstream = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+                    ObjectOutputStream outstream = new ObjectOutputStream(socket.getOutputStream());
                     BufferedImage img;
                     img = r.createScreenCapture(screenBounds);
                     Point mouse = MouseInfo.getPointerInfo().getLocation();
